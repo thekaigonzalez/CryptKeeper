@@ -6,7 +6,7 @@ const client = new discord.Client()
 
 const snekfetch = require("snekfetch")
 client.on('ready', function () {
-    client.user.setActivity("The Ultimate spam game. | ~$help", {type: "WATCHING"}).then(() => {
+    client.user.setActivity("http://api.cryptkeeper.tk/ | ~$help", {type: "WATCHING"}).then(() => {
         console.log("Done!");
     })
 })
@@ -132,7 +132,10 @@ client.on('message', msg => {
             sendMessage("You have " + msg.author.bits + " points, saving now.")
             fs.writeFileSync(msg.author.username, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma + "\n" + msg.author.goldmine + "\n" + msg.author.licenses);
             sendMessage("Done! If the bot dies or crashes, You can type ~$load to load your points, Bonuses, And other goodies :)")
-        } else if (command === "load") {
+        } else if (command === "version") {
+            sendMessage("I'm running on version 1.6!")
+        }
+        else if (command === "load") {
             sendMessage("Loading. . .")
             let array
             try {
@@ -171,7 +174,7 @@ client.on('message', msg => {
                 msg.author.points += points
         } else if (command === "showpoints") {
             sendMessage(msg.author.points)
-        } else if (command === "inventory") {
+        } else if (command === "inventory" || command === "balance" || command === "inv" || command === "me")  {
             sendMessage("Your Inventory:\nBits: **" + msg.author.bits + "**\nBit Multiplier (Session): **" + msg.author.bonus + "**\nGold (~$rshop help): **" + msg.author.gold + "**\nKarma (~$spend): **" + msg.author.karma + "**\n")
         } else if (command === "create_key") {
             sendMessage("Creating a Key for you . . .");
@@ -340,8 +343,71 @@ client.on('message', msg => {
                 msg.author.bits -= amounts
                 fs.writeFileSync(msg.author.username, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma);
             }
-        } else if (command === "changelog") {
+        } else if (command === "code" || command === "source") {
+            let meemd = new discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setAuthor("Hello!")
+                .setDescription("Hey there " + msg.author.username + ", You can find the code [Here!](https://github.com/Kai-Builder/CryptKeeper/), The 1.4 Code can be found [in this area.](https://www.github.com/Kai-Builder/CryptKeeper/tree/c1.4)")
+            sendMessage(meemd)
+        }
+        else if (command === "support") {
+            let msge = new discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setAuthor('Hey there, Some ways to support are:')
+                .addField("Contributing", "Help make CryptKeeper Awesome!", true)
+                .addField("Inviting the bot!", "Inviting the bot to your servers not only helps it get verified, But also helps cryptkeeper get more users to give honest feedback.", true)
+            sendMessage(msge);
+        }
+        else if (command === "profile") {
+            if (!args[0])
+                sendMessage("You need to Say a user first.")
+            else {
+                sendMessage("Searching that user's profile. . .")
+                try {
+                    const user = require('./usrs/' + args[0] + ".json")
+                    const u = new discord.MessageEmbed()
+                        .setColor(user.color)
+                        .setAuthor(args[0] + "'s profile")
+                        .setDescription(user.bio)
+                        .addField("Inventory", "Bits: " + user.bits + "\nUser Bonus: " + user.inventory.bonus + "\nUser Gold: " + user.inventory.gold + '\n', true)
+                    sendMessage(u)
+                }
+                catch (e) {
+                    sendMessage("That user's profile has not been made yet.")
+                }
+            }
+        }
+        else if (command === "newprofile") {
+            if (msg.author.bits < 800)
+                sendMessage("Hey! You can't make a profile with just " + msg.author.bits + " alone. You need about 800 of them to continue. Legalities.")
+            else {
+                if (!args[0] || args[0] === "how" || args[0] === "help") {
+                    sendMessage("Create a profile to flex on your buddies! Requires 800 Bits.\n" +
+                        "Command Syntax: ~$newprofile <showpoints=true> <color=discordcolor> <favcommand> <bio>")
+                } else {
+                    sendMessage("Creating you a profile Now!")
         
+                    
+                    let color = args[0]
+                    let favcommand = args[1]
+        
+                    let bio = args.slice(2).join(' ');
+                    fs.writeFileSync('usrs/' + msg.author.username + '.json', `{
+  "name": "${msg.author.username}",
+  "favorite_command": "${favcommand}",
+  "bio": "${bio}",
+  "bits": ${msg.author.bits},
+  "displaycolor": "${color}",
+  "inventory": {
+\t"bonus": ${msg.author.bonus},
+    "gold": ${msg.author.gold},
+    "licenses": [],
+    "profileable": true,
+    "owner": false
+  }
+}`)
+                }
+            }
         }
         else if (command === "show_bits") {
             sendMessage("`" + msg.author.bits + "`")
@@ -379,7 +445,8 @@ client.on('message', msg => {
             msg.author.gold = 0
             msg.author.bonus = 0
             fs.writeFileSync("./" + msg.author.username, "0\n0\n10\n0\n0")
-        } else if (command === "ships") {
+        }
+        else if (command === "ships") {
             sendMessage("Are you challenging me? Well, Stats have it that")
             let mine = getRandomInt(1, 31)
             let yours = parseInt(args[0])

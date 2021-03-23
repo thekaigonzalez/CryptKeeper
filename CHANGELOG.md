@@ -1,5 +1,16 @@
 Most Recent: c1.4
-
+# C1.6
+## Updated
+Mining Diagnostics.
+## Added
+- The Ability to make a profile. Users can now use profiles to view different user's stats. Must be manually updated. Auto Updates coming soon
+- Support with the CryptKeeper API. http://api.cryptkeeper.tk
+- External support for scripts.
+- The Schematic for Ranks in further versions.
+## Redid
+Nothing.
+## Fixed
+Nothing.
 # C1.4
 ## Updated
 Message looks. New Embedded format.
