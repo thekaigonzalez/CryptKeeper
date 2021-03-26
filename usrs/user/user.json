@@ -1,0 +1,13 @@
+{
+  "name": "Hello World User",
+  "favorite_command": "~$mine",
+  "long-bio": "I Live in a world. I Love mining bits and getting girls.",
+  "bits": 69401,
+  "inventory": {
+	"bonus": 0,
+    "gold": 10,
+    "licenses": [],
+    "profileable": true,
+    "owner": false
+  }
+}

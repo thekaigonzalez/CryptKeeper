@@ -6,11 +6,17 @@ const client = new discord.Client()
 
 const snekfetch = require("snekfetch")
 client.on('ready', function () {
-    client.user.setActivity("http://api.cryptkeeper.tk/ | ~$help", {type: "WATCHING"}).then(() => {
+    client.user.setActivity("Making Sure " + client.users.holds.length + " People get their pay. Also stalking in " + client.guilds.holds.length + " servers. | ~$help", {type: "WATCHING"}).then(() => {
         console.log("Done!");
     })
 })
-
+function ManipulateJSON(pathEvaluatorBase, filename) {
+    fs.writeFile(filename, JSON.stringify(pathEvaluatorBase), function writeJSON(err) {
+        if (err) return console.log(err);
+        console.log(JSON.stringify(pathEvaluatorBase));
+        console.log('writing to ' + pathEvaluatorBase);
+    });
+}
 function readLines(input, func) {
     let remaining = '';
     
@@ -64,6 +70,29 @@ discord.GuildMember.prototype.bonus = 0;
 client.on('message', msg => {
     const args = msg.content.slice(prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
+    let array
+    try {
+        array = fs.readFileSync('./' + msg.author.id).toString().split("\n");
+    } catch (e) {
+    
+    }
+    
+    try {
+        
+        
+        msg.author.bits = parseInt(array[0])
+        msg.author.bonus = parseInt(array[1])
+        msg.author.maxbitlevel = parseInt(array[2])
+        msg.author.gold = parseInt(array[3])
+        msg.author.karma = parseFloat(array[4])
+        msg.author.goldmine = eval(array[5]);
+        msg.author.licenses = eval(array[6])
+        msg.author.rank = array[7];
+    } catch (e) {
+        console.log("User is not in KSDQ DB")
+    }
+    if (msg.author.rank === undefined || msg.author.rank === null)
+        msg.author.rank = "NEWBIE"
     if (msg.author.licenses === undefined || msg.author.licenses === null)
         msg.author.licenses = []
     // noinspection JSUnresolvedVariable,JSUndefinedPropertyAssignment
@@ -92,7 +121,8 @@ client.on('message', msg => {
         msg.author.bits += 10
         console.log("User bit range messed up. Now have " + msg.author.bits)
     }
-    
+    if (isNaN(msg.author.level))
+        msg.author.level = 0
     function sendMessage(msgst) {
         msg.channel.send(msgst).then(() => {
             console.log("done ")
@@ -123,23 +153,23 @@ client.on('message', msg => {
         msg.author.bits += 10
         msg.author.level += 1;
     }
-    if (msg.content.startsWith("~$")) {
+    if (msg.content.startsWith("~$") && msg.channel.type !== "dm") {
         console.log(command)
         const fs = require('fs');
         if (command === "help") {
             sendMessage("Type ~$guide To begin your rich-ness journey.");
         } else if (command === "save") {
             sendMessage("You have " + msg.author.bits + " points, saving now.")
-            fs.writeFileSync(msg.author.username, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma + "\n" + msg.author.goldmine + "\n" + msg.author.licenses);
+            fs.writeFileSync(msg.author.id, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma + "\n" + msg.author.goldmine + "\n" + msg.author.licenses);
             sendMessage("Done! If the bot dies or crashes, You can type ~$load to load your points, Bonuses, And other goodies :)")
         } else if (command === "version") {
-            sendMessage("I'm running on version 1.6!")
+            sendMessage("I'm running on version 1.7!")
         }
         else if (command === "load") {
             sendMessage("Loading. . .")
             let array
             try {
-                array = fs.readFileSync('./' + msg.author.username).toString().split("\n");
+                array = fs.readFileSync('./' + msg.author.id).toString().split("\n");
             } catch (e) {
                 sendMessage("You aren't loaded :( Try saying ~$save.")
                 
@@ -155,15 +185,16 @@ client.on('message', msg => {
                 msg.author.karma = parseFloat(array[4])
                 msg.author.goldmine = eval(array[5]);
                 msg.author.licenses = eval(array[6])
+                msg.author.rank = array[7];
             } catch (e) {
-                sendMessage("Try saving again. An error occured.")
+                sendMessage("Try saving again. An error occurred.")
             }
         } else if (command === "prestige") {
             if (msg.author.bits >= 3000) {
                 sendMessage("RESETTING. ON RESETS YOU GET 100* BONUS. ALL POINTS RESET.")
                 msg.author.bits = 0
                 msg.author.bonus += 100
-                fs.writeFileSync("./" + msg.author.username, "0\n" + msg.author.bonus)
+                fs.writeFileSync("./" + msg.author.id, "0\n" + msg.author.bonus)
             } else {
                 sendMessage("You need at least 3000 Bits to do this.")
             }
@@ -172,7 +203,8 @@ client.on('message', msg => {
             sendMessage("added " + points.toString() + " to your balance.")
             if (!isNaN(points))
                 msg.author.points += points
-        } else if (command === "showpoints") {
+        }
+        else if (command === "showpoints") {
             sendMessage(msg.author.points)
         } else if (command === "inventory" || command === "balance" || command === "inv" || command === "me")  {
             sendMessage("Your Inventory:\nBits: **" + msg.author.bits + "**\nBit Multiplier (Session): **" + msg.author.bonus + "**\nGold (~$rshop help): **" + msg.author.gold + "**\nKarma (~$spend): **" + msg.author.karma + "**\n")
@@ -193,35 +225,41 @@ client.on('message', msg => {
             }
         } else if (command === "mine") {
             msg.author.mines++;
-            let mesages = ["You decide to test that CPU Baby! Earnings below:", "Don't have any more lines. Diagnostic Below:"]
+            let mesages = ["You decide to test that CPU Baby! Earnings Above :)", "Don't have any more lines. Stuff Above :)"]
             if (msg.author.bonus > 1) {
                 let ransource = getRandomInt(0, msg.author.maxbitlevel) * msg.author.bonus
                 msg.author.bits += ransource
                 let ramsaanis = new discord.MessageEmbed()
-                    .setColor('RANDOM')
-                    .setDescription("How you did on your Number #" + msg.author.mines + "b mine")
+                    .setColor('DARK_GREEN')
+                    .setDescription("💵 How you did on your Number No." + msg.author.mines + " mine 💵")
                     .setFooter(mesages[getRandomInt(0, mesages.length)])
                     .addField("How Much Did I Earn?", "You earn presumably 100% of your pay. With a " + msg.author.bonus + "x bonus. So about " + ransource + " bits were earned in this mine.", true)
-                sendMessage(ramsaanis)
+                
                 if (msg.author.goldmine === true) {
                     let gamount = getRandomInt(0, 10)
                     ramsaanis.addField("How Much Gold was earned?", "About " + gamount + " gold was earned.", true);
                     
                     msg.author.gold += gamount
+                    
+                    
+                    
+                    sendMessage(ramsaanis)
                 }
-            else
+                
+                
+                else
                 {
                     msg.author.bits += ransource
                     sendMessage(ramsaanis)
                     
                 }
                 
-            } else {
+            } else if (msg.author.bonus === 0) {
                 let ransource = getRandomInt(0, msg.author.maxbitlevel)
                 msg.author.bits += ransource
                 const ramsaanis = new discord.MessageEmbed()
-                    .setColor('RANDOM')
-                    .addField("Cash Earned", "You earned About **" + ransource + "** Cash.")
+                    .setColor('DARK_GREEN')
+                    .addField("💵 Cash Earned 💵", "You earned About **" + ransource + "** Cash.")
                 sendMessage(ramsaanis)
             }
             
@@ -256,9 +294,9 @@ client.on('message', msg => {
                     msg.author.karma += 1.021
                     sendMessage("You bought another expensive PC. That was a good investment because you now get 10 CPUs, 30000 Cores, 6 MEGA Cores, and 1000000 Bonuses! Thanks for playing this game.")
                 } else if (args[1] === "gold" && msg.author.bits >= 400000) {
-                    msg.author.bits -= 1500;
+                    msg.author.bits -= 400000;
                     msg.author.bonus += 10000
-                    msg.author.bits += 10000
+                    
                     msg.author.maxbitlevel += 500
                     msg.author.bonus += 270000
                     msg.author.gold += 1
@@ -278,7 +316,29 @@ client.on('message', msg => {
                 sendMessage(ems);
                 
             }
-        } else if (command === "rshop") {
+        } else if (command === "upvote") {
+            try {
+                const user = msg.mentions.members.first()
+                const profile = require("./usrs/" + user.id + ".json")
+                profile.upvotes += 1
+                ManipulateJSON(profile, "./usrs/" + user.id + ".json");
+                
+            }
+            catch (e) {
+                sendMessage("Failed to execute that action.")
+            }
+        }
+        else if (command === "level" || command === "lvl" || command === "position" || command  === "hierarchy") {
+            let s = new discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setAuthor('Your level', msg.author.avatarURL())
+                .setDescription('Your Current level is **' + msg.author.level + "**")
+                .addField("How Much XP Do I have?", "You have " + msg.author.points + "p XP.")
+            sendMessage(s)
+            
+        }
+        
+        else if (command === "rshop") {
             if (msg.author.bits < 10000 && msg.author.gold < 1)
                 sendMessage("You need at least 10000 Bits & 1 Gold to shop here.")
             else {
@@ -364,7 +424,8 @@ client.on('message', msg => {
             else {
                 sendMessage("Searching that user's profile. . .")
                 try {
-                    const user = require('./usrs/' + args[0] + ".json")
+                    const member = msg.mentions.members.first()
+                    const user = require('./usrs/' + member.id + ".json")
                     const u = new discord.MessageEmbed()
                         .setColor(user.color)
                         .setAuthor(args[0] + "'s profile")
@@ -386,13 +447,13 @@ client.on('message', msg => {
                         "Command Syntax: ~$newprofile <showpoints=true> <color=discordcolor> <favcommand> <bio>")
                 } else {
                     sendMessage("Creating you a profile Now!")
-        
+                    
                     
                     let color = args[0]
                     let favcommand = args[1]
-        
+                    
                     let bio = args.slice(2).join(' ');
-                    fs.writeFileSync('usrs/' + msg.author.username + '.json', `{
+                    fs.writeFileSync('usrs/' + msg.author.id + '.json', `{
   "name": "${msg.author.username}",
   "favorite_command": "${favcommand}",
   "bio": "${bio}",
@@ -444,7 +505,7 @@ client.on('message', msg => {
             msg.author.maxbitlevel = 10
             msg.author.gold = 0
             msg.author.bonus = 0
-            fs.writeFileSync("./" + msg.author.username, "0\n0\n10\n0\n0")
+            fs.writeFileSync("./" + msg.author.id, "0\n0\n10\n0\n0\nfalse")
         }
         else if (command === "ships") {
             sendMessage("Are you challenging me? Well, Stats have it that")
@@ -467,6 +528,20 @@ client.on('message', msg => {
                 sendMessage("Mining is an addicting way, But a moderators' least favorite way to earn some heavy cash.")
             } else if (args[0] === "karma")
                 sendMessage("Karma Is yet another way to capitalize on your peers. You can earn karma by buying things in the shop.")
+        }
+        else if (command === "spend") {
+            if (!args[0] || args[0] === "help") {
+                sendMessage("Spend your karma on ranks!\nWe have MVP, BIGUSER, ULTRAUSER, And many more. To see them all, Say ~$spend list")
+            }
+            else if (args[0] === "list") {
+                const e = new discord.MessageEmbed()
+                    .setAuthor("Ranks Available")
+                    .setDescription("All ranks available now!")
+                    .addField('RANKS', "∘ MVP | 190000 Karma\n∘ BIGUSER | 203900309 .Karma\n∘ ULTRAUSER | 2980182937129632536172357 Karma\n∘ MVP++ | 121803789126397123 Karma | Gives you access to special commands 7u7\n∘ CODER | nil Karma | Only the OWNER Of this bot can give you this rank.", true)
+                    .addField('HOW', 'You can earn karma by buying items in the shop.')
+                
+                sendMessage(e)
+            }
         }
     }
 })

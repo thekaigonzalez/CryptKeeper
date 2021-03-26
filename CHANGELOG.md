@@ -1,4 +1,26 @@
-Most Recent: c1.4
+Most Recent: c1.8
+# C1.8
+## Updated
+The Look of mining has been changed!
+You can now earn gold mines, And have them saved forever!
+## Added
+Ranks have just been added! You can now have the ultimate flex from your peers and stand out. Early access feature.
+
+Profiles & Saves now search by ID Instead of username. This update was quite tedious to implement but helps cryptkeeper be not-so-annoying.
+When you search, You must search by @ Mention. You can no longer search by username. Since Your ID never changes, You can save with your id instead of name, So if you change your name, You still have that beautiful upgrade.
+
+Mining Now has little tooltips that appear when a user mines. You can view them at the bottom of every mine. I Think it's pretty cool!
+
+I also added AutoLoad! It is an experimental feature which allows users to automatically load their data just by sending a message! This significantly reduces API Load times, and also fixes other things that I don't care about.
+
+
+## Redid
+The Mining Physics, I Fixed Numerous bugs within the code and in the api. Everything's Working!
+## Fixed 
+A Glitch where levels would go up silently.
+
+### Summary
+This is an update that adds huge things to cryptKeeper bitcoin simulator game.
 # C1.6
 ## Updated
 Mining Diagnostics.
