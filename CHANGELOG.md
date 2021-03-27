@@ -1,4 +1,20 @@
-Most Recent: c1.8
+Most Recent: c2.0
+# C2.0
+## Updated
+The Inventory Looks have been revamped! You now get more knowledge at the price of nothing! You can now also say ~$commands for commands.
+## Added
+~$commands Commands :D You can now learn the cryptKeeper ways....
+You can now also learn how-to through better-guide Instead of guide. I took some time for this update, and I hope you like it as much as i do.
+
+I also created A HANDMADE BOTLIST! If your rank is SUPERUSER, Or Higher, Then you can Submit a discord bot to have it searched. 
+![img_2.png](img_2.png)
+
+## Redid
+The Inventory System
+## Fixed
+A Bug with autoload, Where if you reloaded, The autoload would reload your nonsaved points, essentially keeping you from earning more.
+### Summary
+This update is the beginning of the next chapter of CryptKeeper. You can learn about chapters by using the command `~$season | ~$chapters | ~$ecosystem chap | ~$ecosystem chapters | ~$ecosystem seasons`.
 # C1.8
 ## Updated
 The Look of mining has been changed!

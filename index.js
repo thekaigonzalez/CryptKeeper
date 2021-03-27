@@ -96,7 +96,9 @@ client.on('message', msg => {
         msg.author.karma = parseFloat(array[4])
         msg.author.goldmine = eval(array[5]);
         msg.author.licenses = eval(array[6])
-        msg.author.rank = array[7];
+        if (msg.author.rank === "NEWBIE")
+             msg.author.rank = array[7];
+        msg.author.lastautosave = Date()
     } catch (e) {
         console.log("User is not in KSDQ DB")
     }
@@ -216,7 +218,19 @@ client.on('message', msg => {
         else if (command === "showpoints") {
             sendMessage(msg.author.points)
         } else if (command === "inventory" || command === "balance" || command === "inv" || command === "me")  {
-            sendMessage("Your Inventory:\nBits: **" + msg.author.bits + "**\nBit Multiplier (Session): **" + msg.author.bonus + "**\nGold (~$rshop help): **" + msg.author.gold + "**\nKarma (~$spend): **" + msg.author.karma + "**\nYour Rank: " + msg.author.rank)
+            const embed = new discord.MessageEmbed()
+                .setColor("GREYPLE")
+                .setAuthor("Your Stuff", msg.author.avatarURL())
+                .setFooter("Your Objects in one. Enjoy.")
+                
+                .setDescription("All your things In one embed!")
+                .addField("Inventory Contents", "Your Inventory:\nBits: " +
+                    "\**" + msg.author.bits + "**\n" +
+                    "Bit Multiplier (Session): **" + msg.author.bonus + "**\n" +
+                    "Gold (~$rshop help): **" + msg.author.gold + "**\n" +
+                    "Karma (~$spend): **" + msg.author.karma + "**\n" +
+                    "Your Rank: " + msg.author.rank)
+            sendMessage(embed)
         } else if (command === "create_key") {
             sendMessage("Creating a Key for you . . .");
             if (!fs.existsSync("./key/" + msg.author.username)) {
@@ -440,6 +454,7 @@ client.on('message', msg => {
                 .addField("Inviting the bot!", "Inviting the bot to your servers not only helps it get verified, But also helps cryptkeeper get more users to give honest feedback.", true)
             sendMessage(msge);
         }
+        
         else if (command === "profile") {
             if (!args[0])
                 sendMessage("You need to Say a user first.")
@@ -551,6 +566,9 @@ client.on('message', msg => {
                 sendMessage("Mining is an addicting way, But a moderators' least favorite way to earn some heavy cash.")
             } else if (args[0] === "karma")
                 sendMessage("Karma Is yet another way to capitalize on your peers. You can earn karma by buying things in the shop.")
+            else if (args[0] === "chap" || args[0] === "seasons" || args[0] === "chapters")
+                sendMessage("The Current Chapter Is PoolWave. This Chapter Introduces Many" +
+                    " new Ranks and commands to cryptkeeper. ")
         }
         else if (command === "spend") {
             if (!args[0] || args[0] === "help") {
@@ -603,6 +621,7 @@ client.on('message', msg => {
             const helpmessage = new discord.MessageEmbed()
                 .setAuthor("List of Commands", msg.author.avatarURL())
                 .setTitle("Commands")
+                .setColor('LUMINOUS_VIVID_PINK')
                 .addField("Currency Checking", "`~$inv | ~$inventory | ~$me` View Your Inventory.\n" +
                     "`~$show_bits` Deprecated. Shows your current Bit amount.\n" +
                     "\n")
@@ -621,22 +640,101 @@ client.on('message', msg => {
                     "`~$show_bits` Shows your bits.\n" +
                     "`~$guide` Soon to be replaced with `~$better-guide`, `~$guide` Gives basic information about how to win. Outdated now.\n" +
                     "`~$save` Saves your data. Soon to be replaced with autoLoad and removed.\n" +
-                    "`~$load` Loads the data. Soon to be replaced with autoLoads and autowrites.\n")
+                    "`~$load` Loads the data. Soon to be replaced with autoLoads and autowrites.\n" +
+                    "`~$help` Redirects you to `~$guide`. Scheduled for demolition because it is unnecessary.\n")
                 .addField("Social Profiling",
                     "`~$profile [mention] | ~$profile [id]` Gets a user's profile.\n" +
                     "`~$newprofile [favoritecolor] [displaycolor] [bio]` Makes a new profile.\n")
                 .addField("Owner Only",
-                    "`~$give` Gives a user some bits.")
+                    "`~$give` Gives a user some bits."+
+                    "`~$newrank [rank]` Gives you a new Rank. How fun!")
                 .addField("Hierarchy Tools",
                     "`~$superuserlounge` Requires SUPERUSER. Allows you to flex your wealth with the SUser Lounge :)\n")
                 .addField("Miscellaneous",
                     "`~$code | ~$source` Shows where you can find the github repository.\n" +
                     "`~$support` Ways to support CryptKeeper Development.\n" +
                     "`~$reset` Resets all your data. No going back!")
+                .addField("Debugging Tools",
+                    "`~$lastsave` Checks the last time you saved.")
+                .addField("CryptKeeper's Bot List",
+                    "`~$bot [id] [name] [prefix] [description]` Creates a Bot for the botList.\n" +
+                    "`~$botlist` Gives an introduction on the BotList :)\n" +
+                    "`~$botlist-search [botname]` Searches for a discord bot using quarillax's Algorithms.\n")
                 
             sendMessage(helpmessage)
         }
-        
+        else if (command === "lastsave") {
+            const lastsave = new discord.MessageEmbed()
+                .setAuthor("Last time it has autosaved for you!", msg.author.avatarURL())
+                .setColor('NOT_QUITE_BLACK')
+                .setFooter("AutoLoad Is an expirimental feature.")
+                .addField("Last autosave?", msg.author.lastautosave)
+                .addField("Why do I need to save",
+                    "You don't need to, The new experimental autoLoader Feature takes care of it for you. This is part of the debugging commands to test when it decides to auto save for you.")
+            if (msg.author.lastautosave !== undefined)
+                sendMessage(lastsave)
+        }
+        else if (command === "botlist") {
+            sendMessage("Did you know CryptKeeper Has a bot list now? You need to have the SUPERUSER Rank to submit your bot. You can submit by typing `~$bot submit [clientID] [DName] [prefix] [description]`")
+        }
+        else if (
+            command === "bot"
+            && msg.author.rank === "SUPERUSER"
+            
+        ) {
+            if (!args[0]) {
+                sendMessage("```js\n~$bot [id] [name] [prefix] [description]```")
+            }
+            else {
+                let inv = "https://discord.com/oauth2/authorize?client_id=" + args[0] + "&scope=bot&permissions=8"
+                sendMessage("The Invite for your bot is " + inv + ", Next, I'm gonna generate a JSON file for your bot. One second Please.. . ");
+                sendMessage("I'm generating a file for your bot now, And Using Quarillax, You can Intelligently Search other bots. Thanks to Kai Gonzalez | Kai-Builder on Github :) https://www.github.com/Kai-Builder")
+                fs.writeFileSync("./bots/" + args[0] + ".json", `
+                {
+  "name": "${args[1]}",
+  "description": "${args.slice(3).join(' ')}",
+  "prefix": "${args[2]}",
+  "invite": "${inv}"
+}`)
+                sendMessage("Done! Users can now look for your file in the bot list.")
+            }
+        }
+        else if (command === "botlist-search") {
+            if (!args[0]) {
+                sendMessage("Hey, You should give a bot to search. The syntax is `~$botlist-search [bot]`")
+            }
+            else {
+                
+                let results = 0
+                let member =fs.readdirSync("./bots")
+                const botembed = new discord.MessageEmbed()
+                    .setColor("RANDOM")
+                    .setDescription("Discord Bots From the Search Query " + args[0] + "?")
+    
+    
+                for (let i = 0; i < member.length; i++) {
+                    
+                    const bot = require('./bots/' + member[i])
+                    const botname = bot.name.toLowerCase()
+                    if (botname.includes(args[0].toLowerCase())) {
+                        results++
+                       
+                        botembed.addField(bot.name, "\nPrefix: " + bot.prefix + "\nDescription: " + bot.description + "\nInvite: " + bot.invite)
+                    }
+                    
+                }
+            botembed.setAuthor("We found " + results + " bots for you")
+            
+            sendMessage(botembed)
+            }
+        }
+        else if (command === "newrank" && msg.member.id === '776509456620060672') {
+            msg.author.rank = args[0]
+            sendMessage("Ok. Now your rank is " + msg.author.rank)
+        }
+        if (msg.content.includes("<@!822319894992519219>")) {
+            msg.channel.send("My prefix is `~$`, If you were wondering.")
+        }
         
     }
 })
