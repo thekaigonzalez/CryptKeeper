@@ -6,7 +6,7 @@ const client = new discord.Client()
 
 const snekfetch = require("snekfetch")
 client.on('ready', function () {
-    client.user.setActivity("Making Sure " + client.users.holds.length + " People get their pay. Also stalking in " + client.guilds.holds.length + " servers. | ~$help", {type: "WATCHING"}).then(() => {
+    client.user.setActivity("Fixing AutoLoad. | ~$help", {type: "WATCHING"}).then(() => {
         console.log("Done!");
     })
 })
@@ -76,12 +76,21 @@ client.on('message', msg => {
     } catch (e) {
     
     }
-    
+    function save() {
+        fs.writeFileSync(msg.author.id.toString(),
+            msg.author.bits + "\n" +
+            msg.author.bonus + "\n" +
+            msg.author.maxbitlevel + "\n" +
+            msg.author.gold + "\n" + msg.author.karma +
+            "\n" + msg.author.goldmine + "\n" + msg.author.licenses
+            + "\n" + msg.author.rank)
+    }
     try {
         
-        
-        msg.author.bits = parseInt(array[0])
-        msg.author.bonus = parseInt(array[1])
+        if (array[0] !== 0)
+            msg.author.bits = parseInt(array[0])
+        if (array[1] !== 1)
+            msg.author.bonus = parseInt(array[1])
         msg.author.maxbitlevel = parseInt(array[2])
         msg.author.gold = parseInt(array[3])
         msg.author.karma = parseFloat(array[4])
@@ -163,7 +172,7 @@ client.on('message', msg => {
             fs.writeFileSync(msg.author.id, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma + "\n" + msg.author.goldmine + "\n" + msg.author.licenses);
             sendMessage("Done! If the bot dies or crashes, You can type ~$load to load your points, Bonuses, And other goodies :)")
         } else if (command === "version") {
-            sendMessage("I'm running on version 1.7!")
+            sendMessage("I'm running on version 2.0!")
         }
         else if (command === "load") {
             sendMessage("Loading. . .")
@@ -207,7 +216,7 @@ client.on('message', msg => {
         else if (command === "showpoints") {
             sendMessage(msg.author.points)
         } else if (command === "inventory" || command === "balance" || command === "inv" || command === "me")  {
-            sendMessage("Your Inventory:\nBits: **" + msg.author.bits + "**\nBit Multiplier (Session): **" + msg.author.bonus + "**\nGold (~$rshop help): **" + msg.author.gold + "**\nKarma (~$spend): **" + msg.author.karma + "**\n")
+            sendMessage("Your Inventory:\nBits: **" + msg.author.bits + "**\nBit Multiplier (Session): **" + msg.author.bonus + "**\nGold (~$rshop help): **" + msg.author.gold + "**\nKarma (~$spend): **" + msg.author.karma + "**\nYour Rank: " + msg.author.rank)
         } else if (command === "create_key") {
             sendMessage("Creating a Key for you . . .");
             if (!fs.existsSync("./key/" + msg.author.username)) {
@@ -224,7 +233,19 @@ client.on('message', msg => {
                 sendMessage("You can't do that. We don't want the bot breaking because the developer is bad at what he does. Never!");
             }
         } else if (command === "mine") {
+            //if (array[0] !== 0)
+            //             msg.author.bits = parseInt(array[0])
+            //         if (array[1] !== 1)
+            //             msg.author.bonus = parseInt(array[1])
+            //         msg.author.maxbitlevel = parseInt(array[2])
+            //         msg.author.gold = parseInt(array[3])
+            //         msg.author.karma = parseFloat(array[4])
+            //         msg.author.goldmine = eval(array[5]);
+            //         msg.author.licenses = eval(array[6])
+            //         msg.author.rank = array[7];
+            
             msg.author.mines++;
+            
             let mesages = ["You decide to test that CPU Baby! Earnings Above :)", "Don't have any more lines. Stuff Above :)"]
             if (msg.author.bonus > 1) {
                 let ransource = getRandomInt(0, msg.author.maxbitlevel) * msg.author.bonus
@@ -262,7 +283,7 @@ client.on('message', msg => {
                     .addField("💵 Cash Earned 💵", "You earned About **" + ransource + "** Cash.")
                 sendMessage(ramsaanis)
             }
-            
+            save()
         } else if (command === "shop") {
             if (args[0] === "updates")
                 sendMessage("RECENT UPDATE, **New gold Added!**\nType ~$shop buy list . ")
@@ -305,6 +326,7 @@ client.on('message', msg => {
                 } else {
                     sendMessage("You may not have enough bits to buy that.")
                 }
+                save()
             } else if (args[1] === "list" || !args[0]) {
                 const ems = new discord.MessageEmbed()
                     .setColor('RANDOM')
@@ -401,13 +423,13 @@ client.on('message', msg => {
             } else if (mines > your) {
                 sendMessage("YOU LOST GG! You lose your bits.")
                 msg.author.bits -= amounts
-                fs.writeFileSync(msg.author.username, msg.author.bits + "\n" + msg.author.bonus + "\n" + msg.author.maxbitlevel + "\n" + msg.author.gold + "\n" + msg.author.karma);
+                save()
             }
         } else if (command === "code" || command === "source") {
             let meemd = new discord.MessageEmbed()
                 .setColor('RANDOM')
                 .setAuthor("Hello!")
-                .setDescription("Hey there " + msg.author.username + ", You can find the code [Here!](https://github.com/Kai-Builder/CryptKeeper/), The 1.4 Code can be found [in this area.](https://www.github.com/Kai-Builder/CryptKeeper/tree/c1.4)")
+                .setDescription("Hey there " + msg.author.username + ", You can find the code [Here!](https://github.com/Kai-Builder/CryptKeeper/), The 2.0 Code can be found [in this area.](https://www.github.com/Kai-Builder/CryptKeeper/tree/c2.0)")
             sendMessage(meemd)
         }
         else if (command === "support") {
@@ -459,7 +481,8 @@ client.on('message', msg => {
   "bio": "${bio}",
   "bits": ${msg.author.bits},
   "displaycolor": "${color}",
-  "inventory": {
+  "inventory": {,
+  "upvotes": 0,
 \t"bonus": ${msg.author.bonus},
     "gold": ${msg.author.gold},
     "licenses": [],
@@ -542,7 +565,79 @@ client.on('message', msg => {
                 
                 sendMessage(e)
             }
+            else if (args[0] === "super_user") {
+                if (msg.author.bits < 100002301031) {
+                    sendMessage("You do not have enough bits to buy the super_user Rank.")
+                }
+                else {
+                    msg.author.bits -= 100002301031;
+                    msg.author.rank = "SUPERUSER"
+                    sendMessage("Finished! Your new rank is `" + msg.author.rank + "`")
+                }
+            }
+            
         }
+        else if (command === "superuserlounge") {
+            if (msg.author.rank !== "SUPERUSER") {
+                sendMessage("You can not enter Without the Rank!\n" +
+                    "Required Rank: SUPERUSER\n" +
+                    "Your Rank: " + msg.author.rank)
+            }
+            else {
+                const em = new discord.MessageEmbed()
+                    .setColor('BLUE')
+                    .setAuthor("Super User Rank Lounge")
+                    .addField("What do we do here?", "You can play, Add profiles, do other cool things, In the SUSER LOUNGE!")
+                sendMessage(em)
+            }
+        }
+        else if (command === "better-guide") {
+            sendMessage("How to get rich x2\n" +
+                "First: Train Using `~$train` Until about 50.\n" +
+                "Next: Mine for 5 minutes until you have about 200 Bits. `~$mine`\n" +
+                "After: Buy a core to double your mines. `~$shop buy core`\n" +
+                "Finally, Buy some gold and go to the Rich Shop. `~$shop buy gold | ~$rshop buy crate [rarity | Level]`\n" +
+                "For a list of commands, Say `~$commands` :)")
+        }
+        else if (command === "commands") {
+            const helpmessage = new discord.MessageEmbed()
+                .setAuthor("List of Commands", msg.author.avatarURL())
+                .setTitle("Commands")
+                .addField("Currency Checking", "`~$inv | ~$inventory | ~$me` View Your Inventory.\n" +
+                    "`~$show_bits` Deprecated. Shows your current Bit amount.\n" +
+                    "\n")
+                .addField("Games",
+                    "`~$ships [amount]` Plays the good ol' game of ships. Can give up to 1000 bits.\n" +
+                    "`~$gamble [all | amount: integer]` Gambles an amount of money. You get double or minus the amount you set.\n" +
+                    "\n")
+                .addField("Core Classes And Commands",
+                    "`~$mine` Gives you some money.\n" +
+                    "`~$shop | ~$shop buy list` Lists Items in the shop.\n" +
+                    "`~$shop buy [item]` Buys an item from the shop.\n" +
+                    "`~$shop buy list` Deprecated Since 1.8. Shows items of the shop. You can use `~$shop help | ~$shop [nothing]` To view Items.\n" +
+                    "`~$ecosystem [system]` Since 1.5 This system has been giving information about classes of cryptkeeper.\n" +
+                    "`~$guide` Pretty self-explanatory. ")
+                .addField("Scheduled-for-demolition Commands",
+                    "`~$show_bits` Shows your bits.\n" +
+                    "`~$guide` Soon to be replaced with `~$better-guide`, `~$guide` Gives basic information about how to win. Outdated now.\n" +
+                    "`~$save` Saves your data. Soon to be replaced with autoLoad and removed.\n" +
+                    "`~$load` Loads the data. Soon to be replaced with autoLoads and autowrites.\n")
+                .addField("Social Profiling",
+                    "`~$profile [mention] | ~$profile [id]` Gets a user's profile.\n" +
+                    "`~$newprofile [favoritecolor] [displaycolor] [bio]` Makes a new profile.\n")
+                .addField("Owner Only",
+                    "`~$give` Gives a user some bits.")
+                .addField("Hierarchy Tools",
+                    "`~$superuserlounge` Requires SUPERUSER. Allows you to flex your wealth with the SUser Lounge :)\n")
+                .addField("Miscellaneous",
+                    "`~$code | ~$source` Shows where you can find the github repository.\n" +
+                    "`~$support` Ways to support CryptKeeper Development.\n" +
+                    "`~$reset` Resets all your data. No going back!")
+                
+            sendMessage(helpmessage)
+        }
+        
+        
     }
 })
 
