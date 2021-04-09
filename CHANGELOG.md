@@ -1,4 +1,20 @@
-Most Recent: c2.0
+Most Recent: c2.64
+# C2.64
+## Updated
+The general bot, Added external commands using the command handler,
+Many changes to autoLoad and fixed many bugs!
+## Added
+A new "-" prefix, A couple of new commands, And 
+a soon to come verification system :). You can now give users bits (
+OPEN BETA
+)
+By using the -give command. Take advantage of the open beta before
+it closes!
+# C2.4
+## Updated
+The shop, Fishing rods were added, and the mining economy was fixed.
+AutoLoad Now loads users by getting every client user, instead of the old 
+method where it would get on messages.
 # C2.0
 ## Updated
 The Inventory Looks have been revamped! You now get more knowledge at the price of nothing! You can now also say ~$commands for commands.
