@@ -1,4 +1,15 @@
-Most Recent: c2.64
+Most Recent: c2.76
+# C2.76: Mini Update
+## Updated
+The general bot features, Changed the profile picture and made
+some new commands.
+## Added
+Added a new reply system! The Bot replies now, Your level messages
+now get logged, and a new counter system is in place!
+## Fixed
+A Couple of Bugs with autoload.
+## Summary
+A Mini Update to fix some bugs with CKeeper.
 # C2.64
 ## Updated
 The general bot, Added external commands using the command handler,

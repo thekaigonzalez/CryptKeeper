@@ -1,6 +1,6 @@
 const discord = require('discord.js')
 const fs = require("fs");
-
+require('discord-reply');
 
 const client = new discord.Client({intents: ["GUILD_MESSAGES",
         "GUILD_PRESENCES",
@@ -19,7 +19,7 @@ const client = new discord.Client({intents: ["GUILD_MESSAGES",
 
 const snekfetch = require("snekfetch")
 client.on('ready', function () {
-    client.user.setActivity("other bots doing better than me :( | -commands", {type: "WATCHING"})
+    client.user.setActivity("The Weekly News. | "  + client.guilds.cache.size + " Servers. | -commands", {type: "WATCHING"})
 
 })
 function ManipulateJSON(pathEvaluatorBase, filename) {
@@ -94,6 +94,8 @@ client.on('message', msg => {
         fs.mkdirSync('./api/' + msg.guild.id + "/")
 
     fs.writeFileSync('./api/' + msg.guild.id + "/" + msg.author.id, msg.author.messagesSent.toString())
+    if (msg.guild.serverstatus === undefined)
+        msg.guild.serverstatus = "Normal"
 
     const args = msg.content.slice(prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
@@ -135,6 +137,8 @@ client.on('message', msg => {
     } catch (e) {
 
     }
+    if (msg.author.levelupmessages === undefined)
+        msg.author.levelupmessages = []
     if (msg.author.rank === undefined || msg.author.rank === null)
         msg.author.rank = "NEWBIE"
     if (msg.author.licenses === undefined || msg.author.licenses === null)
@@ -187,8 +191,8 @@ client.on('message', msg => {
     if (msg.author.points >= msg.author.goal) {
         msg.author.level += 1;
         msg.author.goal += getRandomInt(msg.author.points * 3, msg.author.level * msg.author.points)
-        msg.reply("You've reached level " + msg.author.level + "! Your next goal is " + msg.author.goal)
-
+        msg.lineReply('You\'ve reached level ' + msg.author.level + ", Next up is level " + msg.author.level+1 + ". Keep grinding! (`-lvl`). This has also been added to your levelup messages. If they disappear, Make sure to contact KaiNotAnimeGirl#9500 :)"); //Line (Inline) Reply with mention
+        msg.author.levelupmessages.push(msg.content)
     }
     if (msg.content.startsWith("-") && msg.channel.type !== "dm") {
         console.log(command)
@@ -230,6 +234,7 @@ client.on('message', msg => {
                     "Your BackPack: **" + msg.author.backpack + "**\n")
             sendMessage(embed)
         } else if (command === "mine") {
+            msg.react("💲")
             //if (array[0] !== 0)
             //             msg.author.bits = parseInt(array[0])
             //         if (array[1] !== 1)
@@ -270,14 +275,15 @@ client.on('message', msg => {
 
 
                 }
-                sendMessage(ramsaanis)
+                msg.lineReply(ramsaanis); //Line (Inline) Reply with mention
+
             } else if (msg.author.bonus === 0) {
                 let ransource = getRandomInt(0, msg.author.maxbitlevel)
                 msg.author.bits += ransource
                 const ramsaanis = new discord.MessageEmbed()
                     .setColor('DARK_GREEN')
                     .addField("💵 Cash Earned 💵", "You earned About **" + ransource + "** Cash.")
-                sendMessage(ramsaanis)
+                msg.lineReply(ramsaanis); //Line (Inline) Reply with mention
             }
             save()
         } else if (command === "shop") {
@@ -372,6 +378,12 @@ client.on('message', msg => {
                         "Bonus: **4,291**\n" +
                         "Bits Given On Join: 9827")
                 sendMessage(jobs)
+            }
+            if (args[0] === "get") {
+                if (args[1] === "cpp") {
+                    msg.author.job = "CPPDev"
+                    sendMessage("You now work as a C++ Dev! You can now do -work And earn Money!")
+                }
             }
         } else if (command === "level" || command === "lvl" || command === "position" || command === "hierarchy") {
             let s = new discord.MessageEmbed()
@@ -756,6 +768,71 @@ client.on('message', msg => {
         else if (command === "get-bits")
         {
 
+        }
+        else if (command === "userbits")
+        {
+            const user = msg.mentions.members.first();
+            sendMessage(user.bits.toString())
+        }
+        else if (command === "work")
+        {
+            if (msg.author.job === "CryptoMiner")
+            {
+                let amount = getRandomInt(100, 1939);
+                msg.author.bits += amount;
+                let emsssded = new discord.MessageEmbed()
+                    .setColor('RANDOM')
+                    .setAuthor('You Work as a ' + msg.author.job)
+                    .addField("Earned:", "About " + amount + " bits for your job as a " + msg.author.job + ".");
+                sendMessage(emsssded)
+            }
+            if (msg.author.job === "CPPDev")
+            {
+                let amount = getRandomInt(100, 1939332);
+                msg.author.bits += amount;
+                let emsssded = new discord.MessageEmbed()
+                    .setColor('RANDOM')
+                    .setAuthor('You Work as a ' + msg.author.job)
+                    .addField("Earned:", "About " + amount + " bits for your job as a " + msg.author.job + ".");
+                sendMessage(emsssded)
+            }
+
+        }
+        else if (command === "counter")
+        {
+            if (args[0] === "channel")
+            {
+                msg.guild.countingchannel = msg.mentions.channels.first();
+                msg.guild.goal = 1;
+            }
+
+        }
+        else if (command === "claim")
+        {
+            sendMessage("After all of the bugs that cryptkeeper's been experiencing lately, You can claim a special gift >->\n" +
+                "You can claim by typing -claim! You've added the new `javascript_hat` Cosmetic!")
+            msg.author.inventory.push("javascript_hat");
+        }
+
+
+        else if (command === "lvlupmessages")
+        {
+            try {
+
+
+                const e = new discord.MessageEmbed()
+                    .setColor('RANDOM')
+                    .setAuthor('Your Level Up messages', msg.author.avatarURL())
+                let mes = 0;
+                for (let i = 0; i < msg.author.levelupmessages.length; i++) {
+                    mes++
+                    e.addField(mes , "\"" + msg.author.levelupmessages[i] + "\"")
+                }
+                msg.lineReply(e); //Line (Inline) Reply with mention
+            }
+            catch (e) {
+                msg.lineReply('You have no level up messages. Get grinding!'); //Line (Inline) Reply with mention
+            }
         }
 
         else {

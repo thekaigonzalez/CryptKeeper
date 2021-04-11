@@ -14,5 +14,8 @@
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "snekfetch": "^4.0.4"
+  },
+  "devDependencies": {
+    "discord-reply": "^0.1.2"
   }
 }
