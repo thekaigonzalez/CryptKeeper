@@ -10,12 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@giphy/js-fetch-api": "^2.4.0",
     "discord.js": "^12.5.1",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "snekfetch": "^4.0.4"
   },
   "devDependencies": {
-    "discord-reply": "^0.1.2"
+    "discord-reply": "^0.1.2",
+    "discord-slash-commands-client": "^1.1.1"
   }
 }

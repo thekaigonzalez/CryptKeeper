@@ -1,4 +1,12 @@
-Most Recent: c2.76
+Most Recent: c2.89
+# C2.89: Performance Update
+## Updated 
+AutoLoad. Fixed & Optimized many different commands.
+## Added
+Notifications! Get Forced to view the mailing list because it's cool.
+Searching and asking for bits where now added. Type
+-commands OR $commands for more information.
+
 # C2.76: Mini Update
 ## Updated
 The general bot features, Changed the profile picture and made
